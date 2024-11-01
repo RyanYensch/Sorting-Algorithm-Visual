@@ -107,6 +107,7 @@ class Sorting_Visualiser:
             self.merge_sort(array, mid_index + 1, right_index)
 
             self.merge(array, left_index, mid_index, right_index)
+        self.draw_sorted(array)
 
     def merge(self, array, left_index, mid_index, right_index):
         L = array[left_index:mid_index + 1]
@@ -138,19 +139,45 @@ class Sorting_Visualiser:
 
         self.next_step(array, left_index, right_index)
 
+
+    def quick_sort(self, array, low=0, high=None):
+        if high is None:
+            high = len(array) - 1
+        if low < high:
+            pivot_index = self.partition(array, low, high)
+            
+            self.quick_sort(array, low, pivot_index - 1)
+            self.quick_sort(array, pivot_index + 1, high)
+
+    def partition(self, array, low, high):
+        pivot = array[high]
+        i = low - 1
+
+        for j in range(low, high):
+            self.next_step(array, j, high)
+
+            if array[j] < pivot:
+                i += 1
+                array[i], array[j] = array[j], array[i]
+
+        array[i + 1], array[high] = array[high], array[i + 1]
+        return i + 1
+
     def add_buttons(self):
         self.button_frame = Frame(self.window)
         self.button_frame.pack()
         self.random_button = Button(self.button_frame, text="Randomise", font="arial", command=self.randomise_bars)
-        self.random_button.grid(row=0, column=0)
+        self.random_button.grid(row=0, column=0, columnspan=5)
         self.bubble_button = Button(self.button_frame, text="Bubble Sort", font="arial", command=lambda: self.bubble_sort(self.bar_heights))
-        self.bubble_button.grid(row=0, column=1)
+        self.bubble_button.grid(row=1, column=0)
         self.selection_button = Button(self.button_frame, text="Selection Sort", font="arial", command=lambda: self.selection_sort(self.bar_heights))
-        self.selection_button.grid(row=0, column=2)
+        self.selection_button.grid(row=1, column=1)
         self.insertion_button = Button(self.button_frame, text="Insertion Sort", font="arial", command=lambda: self.insertion_sort(self.bar_heights))
-        self.insertion_button.grid(row=0, column=3)
+        self.insertion_button.grid(row=1, column=2)
         self.merge_button = Button(self.button_frame, text="Merge Sort", font="arial", command=lambda: self.merge_sort(self.bar_heights))
-        self.merge_button.grid(row=0, column=4)
+        self.merge_button.grid(row=1, column=3)
+        self.quick_button = Button(self.button_frame, text="Quick Sort", font="arial", command=lambda: self.quick_sort(self.bar_heights))
+        self.quick_button.grid(row=1, column=4)
 
 
     def run(self):
