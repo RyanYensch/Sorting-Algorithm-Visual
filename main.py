@@ -43,11 +43,13 @@ class Sorting_Visualiser:
 
     def next_step(self, array, changed1 = -1, changed2 = -1, sorted = False):
         self.window.update_idletasks()
+        self.window.update()
         self.window.after(DELAY)
         self.draw_bars(array, changed1, changed2, sorted)
     
     def draw_sorted(self, i = 0):
         self.window.update_idletasks()
+        self.window.update()
         if (i < len(self.bar_heights)):
             self.draw_bars(self.bar_heights, sorted=True, entry=i)
             self.window.after(DELAY * 2, self.draw_sorted(i + 1))
