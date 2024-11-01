@@ -47,46 +47,66 @@ class Sorting_Visualiser:
         self.window.after(DELAY)
         self.draw_bars(array, changed1, changed2, sorted)
     
-    def draw_sorted(self, i = 0):
+    def draw_sorted(self, array, i = 0):
         self.window.update_idletasks()
         self.window.update()
-        if (i < len(self.bar_heights)):
-            self.draw_bars(self.bar_heights, sorted=True, entry=i)
-            self.window.after(DELAY * 2, self.draw_sorted(i + 1))
+        if (i < len(array)):
+            self.draw_bars(array, sorted=True, entry=i)
+            self.window.after(DELAY * 2, self.draw_sorted(array, i + 1))
         else:
-            self.window.after(DELAY, self.draw_bars(self.bar_heights))
+            self.draw_bars(array)
 
-    def bubble_sort(self):
+    def bubble_sort(self, array):
         self.window.update_idletasks()
-        for i in range(len(self.bar_heights)):
-            for j in range(len(self.bar_heights) - i - 1):
-                if self.bar_heights[j] > self.bar_heights[j + 1]:
-                    (self.bar_heights[j], self.bar_heights[j + 1]) = (self.bar_heights[j + 1], self.bar_heights[j])
-                    self.next_step(self.bar_heights, j, j+1)
+        for i in range(len(array)):
+            for j in range(len(array) - i - 1):
+                if array[j] > array[j + 1]:
+                    (array[j], array[j + 1]) = (array[j + 1], array[j])
+                    self.next_step(array, j, j+1)
         
-        self.draw_sorted()
+        self.draw_sorted(array)
 
-    def selection_sort(self):
-        for i in range(len(self.bar_heights)):
+    def selection_sort(self, array):
+        for i in range(len(array)):
             min = i
 
-            for j in range(i + 1, len(self.bar_heights)):
-                if (self.bar_heights[j] < self.bar_heights[min]):
-                    self.next_step(self.bar_heights, j, min)
+            for j in range(i + 1, len(array)):
+                if (array[j] < array[min]):
+                    self.next_step(array, j, min)
                     min = j
-            (self.bar_heights[i], self.bar_heights[min]) = (self.bar_heights[min], self.bar_heights[i])
-            self.next_step(self.bar_heights, i, min)
+            (array[i], array[min]) = (array[min], array[i])
+            self.next_step(array, i, min)
 
-        self.draw_sorted()
+        self.draw_sorted(array)
 
+    def insertion_sort(self, array):
+        n = len(array)
+
+        for i in range(1, n):
+            key = array[i]
+            j = i - 1
+
+            while (j >= 0 and key < array[j]):
+                array[j + 1] = array[j]
+                j -= 1
+                self.next_step(array, j, j + 1)
+
+            array[j + 1] = key
+            self.next_step(array, i, j + 1)
+
+        self.draw_sorted(array)    
 
     def add_buttons(self):
-        self.random_button = Button(self.window, text="Randomise", font="arial", command=self.randomise_bars)
-        self.random_button.pack()
-        self.bubble_button = Button(self.window, text="Bubble Sort", font="arial", command=self.bubble_sort)
-        self.bubble_button.pack()
-        self.selection_button = Button(self.window, text="Selection Sort", font="arial", command=self.selection_sort)
-        self.selection_button.pack()
+        self.button_frame = Frame(self.window)
+        self.button_frame.pack()
+        self.random_button = Button(self.button_frame, text="Randomise", font="arial", command=self.randomise_bars)
+        self.random_button.grid(row=0, column=0)
+        self.bubble_button = Button(self.button_frame, text="Bubble Sort", font="arial", command=lambda: self.bubble_sort(self.bar_heights))
+        self.bubble_button.grid(row=0, column=1)
+        self.selection_button = Button(self.button_frame, text="Selection Sort", font="arial", command=lambda: self.selection_sort(self.bar_heights))
+        self.selection_button.grid(row=0, column=2)
+        self.insertion_button = Button(self.button_frame, text="Insertion Sort", font="arial", command=lambda: self.insertion_sort(self.bar_heights))
+        self.insertion_button.grid(row=0, column=3)
 
     def run(self):
         self.randomise_bars()
