@@ -94,7 +94,49 @@ class Sorting_Visualiser:
             array[j + 1] = key
             self.next_step(array, i, j + 1)
 
-        self.draw_sorted(array)    
+        self.draw_sorted(array)
+
+    def merge_sort(self, array, left_index=0, right_index=None):
+        if right_index is None:
+            right_index = len(array) - 1
+
+        if left_index < right_index:
+            mid_index = (left_index + right_index) // 2 
+
+            self.merge_sort(array, left_index, mid_index)
+            self.merge_sort(array, mid_index + 1, right_index)
+
+            self.merge(array, left_index, mid_index, right_index)
+
+    def merge(self, array, left_index, mid_index, right_index):
+        L = array[left_index:mid_index + 1]
+        M = array[mid_index + 1:right_index + 1]
+
+        i = j = 0
+        k = left_index
+
+        while i < len(L) and j < len(M):
+            self.next_step(array, left_index + i, mid_index + 1 + j)
+            
+            if L[i] < M[j]:
+                array[k] = L[i]
+                i += 1
+            else:
+                array[k] = M[j]
+                j += 1
+            k += 1
+
+        while i < len(L):
+            array[k] = L[i]
+            i += 1
+            k += 1
+
+        while j < len(M):
+            array[k] = M[j]
+            j += 1
+            k += 1
+
+        self.next_step(array, left_index, right_index)
 
     def add_buttons(self):
         self.button_frame = Frame(self.window)
@@ -107,6 +149,9 @@ class Sorting_Visualiser:
         self.selection_button.grid(row=0, column=2)
         self.insertion_button = Button(self.button_frame, text="Insertion Sort", font="arial", command=lambda: self.insertion_sort(self.bar_heights))
         self.insertion_button.grid(row=0, column=3)
+        self.merge_button = Button(self.button_frame, text="Merge Sort", font="arial", command=lambda: self.merge_sort(self.bar_heights))
+        self.merge_button.grid(row=0, column=4)
+
 
     def run(self):
         self.randomise_bars()
