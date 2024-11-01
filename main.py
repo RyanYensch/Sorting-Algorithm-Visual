@@ -54,25 +54,39 @@ class Sorting_Visualiser:
             self.draw_bars(self.bar_heights, sorted=True, entry=i)
             self.window.after(DELAY * 2, self.draw_sorted(i + 1))
         else:
-            self.window.after(DELAY * 10, self.draw_bars(self.bar_heights))
+            self.window.after(DELAY, self.draw_bars(self.bar_heights))
 
     def bubble_sort(self):
         self.window.update_idletasks()
         for i in range(len(self.bar_heights)):
             for j in range(len(self.bar_heights) - i - 1):
                 if self.bar_heights[j] > self.bar_heights[j + 1]:
-                    temp = self.bar_heights[j]
-                    self.bar_heights[j] = self.bar_heights[j + 1]
-                    self.bar_heights[j + 1] = temp
+                    (self.bar_heights[j], self.bar_heights[j + 1]) = (self.bar_heights[j + 1], self.bar_heights[j])
                     self.next_step(self.bar_heights, j, j+1)
         
         self.draw_sorted()
+
+    def selection_sort(self):
+        for i in range(len(self.bar_heights)):
+            min = i
+
+            for j in range(i + 1, len(self.bar_heights)):
+                if (self.bar_heights[j] < self.bar_heights[min]):
+                    self.next_step(self.bar_heights, j, min)
+                    min = j
+            (self.bar_heights[i], self.bar_heights[min]) = (self.bar_heights[min], self.bar_heights[i])
+            self.next_step(self.bar_heights, i, min)
+
+        self.draw_sorted()
+
 
     def add_buttons(self):
         self.random_button = Button(self.window, text="Randomise", font="arial", command=self.randomise_bars)
         self.random_button.pack()
         self.bubble_button = Button(self.window, text="Bubble Sort", font="arial", command=self.bubble_sort)
         self.bubble_button.pack()
+        self.selection_button = Button(self.window, text="Selection Sort", font="arial", command=self.selection_sort)
+        self.selection_button.pack()
 
     def run(self):
         self.randomise_bars()
