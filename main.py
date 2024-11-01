@@ -28,8 +28,9 @@ class Sorting_Visualiser:
     def randomise_bars(self):
         self.bar_heights = [i * SCREEN_HEIGHT / self.num_bars for i in range(1, self.num_bars + 1)]
         random.shuffle(self.bar_heights)
+        self.draw_bars(self.bar_heights)
 
-    def draw_bars(self, array, changed1 = -1, changed2 = -1):
+    def draw_bars(self, array, changed1 = -1, changed2 = -1, sorted=False):
         self.canvas.delete("all")
         bar_width = self.screen_width / self.num_bars
 
@@ -56,11 +57,16 @@ class Sorting_Visualiser:
                     self.bar_heights[j + 1] = temp
                     self.next_step(self.bar_heights, j, j+1)
 
+    def add_buttons(self):
+        self.random_button = Button(self.window, text="Randomise", font="arial", command=self.randomise_bars)
+        self.random_button.pack()
+        self.bubble_button = Button(self.window, text="Bubble Sort", font="arial", command=self.bubble_sort)
+        self.bubble_button.pack()
 
     def run(self):
         self.randomise_bars()
         self.draw_bars(self.bar_heights)
-        self.window.after(1000, self.bubble_sort())
+        self.add_buttons()
         self.window.mainloop()
 
 
