@@ -1,4 +1,6 @@
 from tkinter import *
+import numpy as np
+import sounddevice as sd
 import random
 
 
@@ -7,7 +9,20 @@ WINDOW_WIDTH = 600
 SCREEN_HEIGHT = 400
 SCREEN_WIDTH = 600
 NUM_BARS = 100
-DELAY = 10
+DELAY = 5
+
+def normalize_frequency(input_value, min_freq=100, max_freq=500):
+    normalized_value = (input_value - 1) / (NUM_BARS - 1)
+    return min_freq + normalized_value * (max_freq - min_freq)
+
+def play_tone(freq, dur):
+    volume = 0.1
+    sample_rate = 44100
+    freq = normalize_frequency(freq)
+    t = np.linspace(0, dur, int(sample_rate * dur), endpoint = False)
+    fade_out = np.linspace(1, 0, int(sample_rate * dur))
+    tone = volume * 0.5 * np.sin(2 * np.pi * freq * t) * fade_out
+    sd.play(tone, samplerate=sample_rate, blocking=True, blocksize=2048)
 
 
 class Sorting_Visualiser:
@@ -45,6 +60,7 @@ class Sorting_Visualiser:
         self.window.update_idletasks()
         self.window.update()
         self.window.after(DELAY)
+        play_tone(array[changed1], 0.1)
         self.draw_bars(array, changed1, changed2, sorted)
     
     def draw_sorted(self, array, i = 0):
@@ -52,7 +68,8 @@ class Sorting_Visualiser:
         self.window.update()
         if (i < len(array)):
             self.draw_bars(array, sorted=True, entry=i)
-            self.window.after(DELAY * 2, self.draw_sorted(array, i + 1))
+            play_tone(array[i], 0.1)
+            self.window.after(DELAY * 0.5, self.draw_sorted(array, i + 1))
         else:
             self.draw_bars(array)
 
@@ -107,7 +124,6 @@ class Sorting_Visualiser:
             self.merge_sort(array, mid_index + 1, right_index)
 
             self.merge(array, left_index, mid_index, right_index)
-        self.draw_sorted(array)
 
     def merge(self, array, left_index, mid_index, right_index):
         L = array[left_index:mid_index + 1]
