@@ -30,7 +30,7 @@ class Sorting_Visualiser:
         random.shuffle(self.bar_heights)
         self.draw_bars(self.bar_heights)
 
-    def draw_bars(self, array, changed1 = -1, changed2 = -1, sorted=False):
+    def draw_bars(self, array, changed1 = -1, changed2 = -1, sorted=False, entry = -1):
         self.canvas.delete("all")
         bar_width = self.screen_width / self.num_bars
 
@@ -39,13 +39,20 @@ class Sorting_Visualiser:
             x1 = (i + 1) * bar_width
             y0 = self.screen_height
             y1 = self.screen_height - height
-            self.canvas.create_rectangle(x0, y0, x1, y1, fill=("white" if (i == changed1 or i == changed2) else "green"))
+            self.canvas.create_rectangle(x0, y0, x1, y1, fill=("white" if (i == changed1 or i == changed2 or (sorted == True and i <= entry)) else "green"))
 
-    def next_step(self, array, changed1, changed2):
+    def next_step(self, array, changed1 = -1, changed2 = -1, sorted = False):
         self.window.update_idletasks()
         self.window.after(DELAY)
-        self.draw_bars(array, changed1, changed2)
-        
+        self.draw_bars(array, changed1, changed2, sorted)
+    
+    def draw_sorted(self, i = 0):
+        self.window.update_idletasks()
+        if (i < len(self.bar_heights)):
+            self.draw_bars(self.bar_heights, sorted=True, entry=i)
+            self.window.after(DELAY * 2, self.draw_sorted(i + 1))
+        else:
+            self.window.after(DELAY * 10, self.draw_bars(self.bar_heights))
 
     def bubble_sort(self):
         self.window.update_idletasks()
@@ -56,6 +63,8 @@ class Sorting_Visualiser:
                     self.bar_heights[j] = self.bar_heights[j + 1]
                     self.bar_heights[j + 1] = temp
                     self.next_step(self.bar_heights, j, j+1)
+        
+        self.draw_sorted()
 
     def add_buttons(self):
         self.random_button = Button(self.window, text="Randomise", font="arial", command=self.randomise_bars)
